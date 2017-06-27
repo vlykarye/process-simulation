@@ -18,20 +18,11 @@ namespace EVENT_TABLE
      enum TOKEN { NCORES, NEW, CORE, DISK, DISPLAY, INPUT, NONE };
 
      // need a structure to hold a rows worth of data
-     // { id    request    value    blocking    start_time    end_time     order }
+     // { id    request    value    blocking    start_time    end_time }
      struct
           row
      {
-          int id;    TOKEN request;    int value;     bool blocking;    int start_time;    int end_time;     int order;
-
-          bool operator()(row const & a, row const & b) const
-          {
-               if ( a.start_time == b.start_time )
-               {
-                    return (a.order > b.order);
-               }
-               return (a.start_time > b.start_time);
-          }
+          int id;    TOKEN request;    int value;     bool blocking;    int start_time;    int end_time;
      };
 
      // make a table to hold history of events
@@ -39,121 +30,18 @@ namespace EVENT_TABLE
           table
      {
      public:
-          table(vector<row> && rows)
-          {
-               //rows.at(0);
-
-               struct temp_comparator
-               {
-                    bool operator()(row const & a, row const & b) const
-                    {
-                         if ( a.start_time == b.start_time )
-                         {
-                              if ( a.id == b.id )
-                              {
-                                   return (a.order > b.order);
-                              }
-                              return (a.id > b.id);
-                         }
-                         return (a.start_time > b.start_time);
-                    }
-               };
-
-               priority_queue<row, vector<row>, temp_comparator> temp;
-
-               auto && beg = rows.begin() + 1;
-               auto && end = rows.end();
-               for ( ; beg != end; ++beg )
-               {
-                    auto && r = *beg;
-                    temp.push(r);
-               }
-
-               // adjust ordering and push into tasks
-               row p = { 0, NONE, 0, false, 0, 0, 0 };
-
-               // first element
-               p = temp.top();
-               tasks.push(temp.top());
-               temp.pop();
-
-               // remaining elements
-               while ( temp.empty() == false )
-               {
-                    auto t = temp.top();
-                    temp.pop();
-
-                    if ( t.start_time == p.start_time )
-                    {
-                         t.order = p.order + 1;
-                    }
-                    p = t;
-
-                    tasks.push(t);
-               }
-          }
-
-          void
-               time_adjust
-               (
-                    int delay
-               )
-          {
-               // record top element process_id
-               // for each element with same process id
-               //   add the delay
-               // if element has same start_time as previous element
-               //   increase its order
-
-               int id = tasks.top().id;
-
-               // { id    request    value    blocking    start_time    end_time    order }
-               row p = { 0, NONE, 0, false, 0, 0, 0 };
-
-               priority_queue<row, vector<row>, row> temp;
-               while ( tasks.empty() == false )
-               {
-                    auto t = tasks.top();
-                    tasks.pop();
-
-                    if ( t.id == id )
-                    {
-                         t.start_time += delay;
-                         t.end_time += delay;
-                    }
-                    if ( t.start_time == p.start_time )
-                    {
-                         t.order = p.order + 1;
-                    }
-                    p = t;
-
-                    temp.push(t);
-               }
-
-               tasks.swap(temp);
-          }
+          table(vector<row> && rows) :rows(rows) {}
 
           void print()
           {
-               priority_queue<row, vector<row>, row> copy(tasks);
-
-               // cannot iterate a queue
-               vector<row> rows;
-               while ( copy.empty() == false )
+               for ( auto&& r : rows )
                {
-                    rows.push_back(copy.top());
-                    copy.pop();
-               }
-
-               for ( row r : rows )
-               {
-                    cout << setw(3) << r.id << " " << setw(10) << left << TOKEN_STRING[r.request] << " " << setw(5) << right << r.value << " " << setw(5) << r.start_time << " " << setw(5) << r.end_time << " " << r.blocking << " " << r.order << endl;
+                    cout << setw(3) << r.id << " " << setw(10) << left << TOKEN_STRING[r.request] << " " << setw(5) << right << r.value << " " << setw(5) << r.start_time << " " << setw(5) << r.end_time << " " << r.blocking << endl;
                }
                cout << endl;
           }
-
      private:
-          priority_queue<row, vector<row>, row> tasks;
+          vector<row> rows;
      };
 
      // input file
@@ -233,7 +121,7 @@ namespace EVENT_TABLE
           }
 
      private:
-          row r = { -1, NONE, true, 0, 0, 0, 0 };
+          row r = { -1, NONE, true, 0, 0, 0 };
           string & s = string();
 
           // { id    request    value    blocking    start_time    end_time }
@@ -340,8 +228,8 @@ namespace EVENT_TABLE
                     vector<row> & rows
                )
           {
-               // { id    request    value    blocking    start_time    end_time    order }
-               row p = { 0, NONE, 0, false, 0, 0, 0 };
+               int prev_pid = 0;
+               int prev_end = 0;
 
                auto && beg = rows.begin();
                auto && end = rows.end();
@@ -349,21 +237,14 @@ namespace EVENT_TABLE
                {
                     auto && r = *beg;
 
-                    if ( r.request == NEW )
+                    if ( r.id == prev_pid )
                     {
-                         r.start_time = r.value;
-                         r.end_time = r.value;
+                         r.start_time = prev_end;
                     }
-                    else
-                    {
-                         r.start_time = p.end_time;
-                         r.end_time = r.start_time + r.value;
-                         if ( r.start_time == p.start_time )
-                         {
-                              r.order = p.order + 1;
-                         }
+                    else {
+                         prev_pid = r.id;
                     }
-                    p = r;
+                    prev_end = r.end_time = r.start_time + r.value;
                }
           }
      };
@@ -379,8 +260,6 @@ int main(int argc, const char ** argv)
      using namespace EVENT_TABLE;
 
      table t = build_from_stream(ifstream("1.txt"));
-     t.print();
-     t.time_adjust(6);
      t.print();
 
      return 0;
