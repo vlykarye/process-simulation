@@ -69,26 +69,16 @@ namespace EVENT_TABLE
                     temp.push(r);
                }
 
-               // adjust ordering and push into tasks
-               row p = { 0, NONE, 0, false, 0, 0, 0 };
-
-               // first element
-               p = temp.top();
-               tasks.push(temp.top());
-               temp.pop();
-
-               // remaining elements
+               row p = { -1, NONE, -1, false, -1, -1, -1 };
                while ( temp.empty() == false )
                {
                     auto t = temp.top();
                     temp.pop();
-
-                    if ( t.start_time == p.start_time )
-                    {
+                    t.order = 0;
+                    if ( t.start_time == p.start_time ) {
                          t.order = p.order + 1;
                     }
                     p = t;
-
                     tasks.push(t);
                }
           }
@@ -135,7 +125,7 @@ namespace EVENT_TABLE
 
           void print()
           {
-               priority_queue<row, vector<row>, row> copy(tasks);
+               auto copy(tasks);
 
                // cannot iterate a queue
                vector<row> rows;
@@ -380,8 +370,8 @@ int main(int argc, const char ** argv)
 
      table t = build_from_stream(ifstream("1.txt"));
      t.print();
-     t.time_adjust(6);
-     t.print();
+     //t.time_adjust(6);
+     //t.print();
 
      return 0;
 }
