@@ -20,11 +20,11 @@ namespace EVENT_TABLE
      // need a structure to hold a rows worth of data
      // { id    request    value    blocking    start_time    end_time     order }
      struct
-          row
+          task
      {
           int id;    TOKEN request;    int value;     bool blocking;    int start_time;    int end_time;     int order;
 
-          bool operator()(row const & a, row const & b) const
+          bool operator()(task const & a, task const & b) const
           {
                if ( a.start_time == b.start_time )
                {
@@ -34,18 +34,18 @@ namespace EVENT_TABLE
           }
      };
 
-     // make a table to hold history of events
+     // make a tasklist to hold history of events
      class
-          table
+          tasklist
      {
      public:
-          table(vector<row> && rows)
+          tasklist(vector<task> && rows)
           {
                //rows.at(0);
 
                struct temp_comparator
                {
-                    bool operator()(row const & a, row const & b) const
+                    bool operator()(task const & a, task const & b) const
                     {
                          if ( a.start_time == b.start_time )
                          {
@@ -59,7 +59,7 @@ namespace EVENT_TABLE
                     }
                };
 
-               priority_queue<row, vector<row>, temp_comparator> temp;
+               priority_queue<task, vector<task>, temp_comparator> temp;
 
                auto && beg = rows.begin() + 1;
                auto && end = rows.end();
@@ -69,7 +69,7 @@ namespace EVENT_TABLE
                     temp.push(r);
                }
 
-               row p = { -1, NONE, -1, false, -1, -1, -1 };
+               task p = { -1, NONE, -1, false, -1, -1, -1 };
                while ( temp.empty() == false )
                {
                     auto t = temp.top();
@@ -82,6 +82,30 @@ namespace EVENT_TABLE
                     tasks.push(t);
                }
           }
+
+
+
+          void print()
+          {
+               auto copy(tasks);
+
+               // cannot iterate a queue
+               vector<task> rows;
+               while ( copy.empty() == false )
+               {
+                    rows.push_back(copy.top());
+                    copy.pop();
+               }
+
+               for ( task r : rows )
+               {
+                    cout << setw(3) << r.id << " " << setw(10) << left << TOKEN_STRING[r.request] << " " << setw(5) << right << r.value << " " << setw(5) << r.start_time << " " << setw(5) << r.end_time << " " << r.blocking << " " << r.order << endl;
+               }
+               cout << endl;
+          }
+
+     private:
+          priority_queue<task, vector<task>, task> tasks;
 
           void
                time_adjust
@@ -98,9 +122,9 @@ namespace EVENT_TABLE
                int id = tasks.top().id;
 
                // { id    request    value    blocking    start_time    end_time    order }
-               row p = { 0, NONE, 0, false, 0, 0, 0 };
+               task p = { 0, NONE, 0, false, 0, 0, 0 };
 
-               priority_queue<row, vector<row>, row> temp;
+               priority_queue<task, vector<task>, task> temp;
                while ( tasks.empty() == false )
                {
                     auto t = tasks.top();
@@ -122,28 +146,6 @@ namespace EVENT_TABLE
 
                tasks.swap(temp);
           }
-
-          void print()
-          {
-               auto copy(tasks);
-
-               // cannot iterate a queue
-               vector<row> rows;
-               while ( copy.empty() == false )
-               {
-                    rows.push_back(copy.top());
-                    copy.pop();
-               }
-
-               for ( row r : rows )
-               {
-                    cout << setw(3) << r.id << " " << setw(10) << left << TOKEN_STRING[r.request] << " " << setw(5) << right << r.value << " " << setw(5) << r.start_time << " " << setw(5) << r.end_time << " " << r.blocking << " " << r.order << endl;
-               }
-               cout << endl;
-          }
-
-     private:
-          priority_queue<row, vector<row>, row> tasks;
      };
 
      // input file
@@ -155,13 +157,13 @@ namespace EVENT_TABLE
      // {INPUT, t} blocks process for duration t
 
      /// TODO: do this later
-     //table
+     //tasklist
      //     build_from_stream
      //     (
      //          istream & input_stream
      //     )
      //{
-     //     table new_table;
+     //     tasklist new_table;
      //
      //     string line;
      //     string token;
@@ -174,7 +176,7 @@ namespace EVENT_TABLE
      //          input_stream >> t;
      //          input_stream >> v;
      //
-     //          row new_row;
+     //          task new_row;
      //          new_row.request = t;
      //          new_row.blocking = true;
      //          new_row.value = v;
@@ -198,14 +200,14 @@ namespace EVENT_TABLE
      //}
 
      class
-          builder_row
+          builder_task
      {
      public:
-          builder_row() = default;
-          builder_row(const builder_row&) = delete;
-          builder_row& operator=(const builder_row&) = delete;
+          builder_task() = default;
+          builder_task(const builder_task&) = delete;
+          builder_task& operator=(const builder_task&) = delete;
 
-          row
+          task
                row_via_jump_table
                (
                     tuple<string const, int const> const & pair
@@ -216,14 +218,14 @@ namespace EVENT_TABLE
                char const & c = s.at(0); // first character of token
 
                // hash function: c % 4
-               // used as index into jump table
+               // used as index into jump tasklist
                (this->*jump[(c % 4)])();
 
                return r;
           }
 
      private:
-          row r = { -1, NONE, true, 0, 0, 0, 0 };
+          task r = { -1, NONE, true, 0, 0, 0, 0 };
           string & s = string();
 
           // { id    request    value    blocking    start_time    end_time }
@@ -279,22 +281,22 @@ namespace EVENT_TABLE
           // I (73) % 4 = 1
           // N (78) % 4 = 2
           // C (67) % 4 = 3
-          void(builder_row::* jump[4])() = { &builder_row::jump_D, &builder_row::jump_I, &builder_row::jump_N, &builder_row::jump_C };
+          void(builder_task::* jump[4])() = { &builder_task::jump_D, &builder_task::jump_I, &builder_task::jump_N, &builder_task::jump_C };
      };
 
      class
-          builder_table
+          builder_tasklist
      {
      public:
-          static vector<row>
+          static vector<task>
                build_via_jump_table
                (
                     istream & input_stream
                )
           {
-               vector<row> rows;
+               vector<task> rows;
 
-               builder_row br;
+               builder_task br;
                tuple<string, int> pair;
                while ( next_pair(pair, input_stream) )
                {
@@ -327,11 +329,11 @@ namespace EVENT_TABLE
           static void
                initial_time_adjust
                (
-                    vector<row> & rows
+                    vector<task> & rows
                )
           {
                // { id    request    value    blocking    start_time    end_time    order }
-               row p = { 0, NONE, 0, false, 0, 0, 0 };
+               task p = { 0, NONE, 0, false, 0, 0, 0 };
 
                auto && beg = rows.begin();
                auto && end = rows.end();
@@ -358,9 +360,9 @@ namespace EVENT_TABLE
           }
      };
 
-     table build_from_stream(istream & input_stream)
+     tasklist build_from_stream(istream & input_stream)
      {
-          return builder_table::build_via_jump_table(input_stream);
+          return builder_tasklist::build_via_jump_table(input_stream);
      }
 };
 
@@ -368,7 +370,7 @@ int main(int argc, const char ** argv)
 {
      using namespace EVENT_TABLE;
 
-     table t = build_from_stream(ifstream("1.txt"));
+     tasklist t = build_from_stream(ifstream("1.txt"));
      t.print();
      //t.time_adjust(6);
      //t.print();

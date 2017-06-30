@@ -1,5 +1,5 @@
 // stdafx.cpp : source file that includes just the standard includes
-// table-project.pch will be the pre-compiled header
+// tasklist-project.pch will be the pre-compiled header
 // stdafx.obj will contain the pre-compiled type information
 
 #include "stdafx.h"
