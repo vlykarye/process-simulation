@@ -41,8 +41,9 @@ namespace EVENT_TABLE
      public:
           tasklist(vector<task> && rows)
           {
-               //rows.at(0);
-
+               // a comparator function similar to the one in struct task that takes
+               // into consideration the 'id', as the 'order' is dependent upon it
+               // up until this point
                struct temp_comparator
                {
                     bool operator()(task const & a, task const & b) const
@@ -59,8 +60,12 @@ namespace EVENT_TABLE
                     }
                };
 
+               // a temporary priority queue that utilizes the temperary comparator
+               // function defined above
                priority_queue<task, vector<task>, temp_comparator> temp;
 
+               // firstly, the tasks must taken from the vector and pushed into the
+               // temporary priority queue defined above
                auto && beg = rows.begin() + 1;
                auto && end = rows.end();
                for ( ; beg != end; ++beg )
@@ -69,7 +74,10 @@ namespace EVENT_TABLE
                     temp.push(r);
                }
 
-               task p = { -1, NONE, -1, false, -1, -1, -1 };
+               // next, now that the tasks are properly sorted, they must be copied
+               // from the temprory priority queue into the priority queue of this
+               // tasklist object
+               task p{ -1, NONE, -1, false, -1, -1, -1 };
                while ( temp.empty() == false )
                {
                     auto t = temp.top();
@@ -82,8 +90,6 @@ namespace EVENT_TABLE
                     tasks.push(t);
                }
           }
-
-
 
           void print()
           {
@@ -113,35 +119,57 @@ namespace EVENT_TABLE
                     int delay
                )
           {
-               // record top element process_id
-               // for each element with same process id
-               //   add the delay
-               // if element has same start_time as previous element
-               //   increase its order
+               // this function is called when a task cannot be executed and must
+               // be delayed until the resource it requires is nextly available
+
+               // to delay a task, 'delay' must be added to its '.start_time' and
+               // '.end_time' | this adjustment will consequently break the ordering
+               // of subsequent tasks | therefore, the '.start_time' and '.end_time'
+               // for each subsequent task with the same '.id' must also be adjusted
+               // with 'delay'
+
+               // here is the process to do so:
+
+               // 1) record the '.id' of the top task
 
                int id = tasks.top().id;
 
-               // { id    request    value    blocking    start_time    end_time    order }
-               task p = { 0, NONE, 0, false, 0, 0, 0 };
+               // 2) create a temporary task object to store the values of previously
+               //    processed tasks during the operation
+
+               // task { id, request, value, blocking, start_time, end_time, order }
+               task p{ 0, NONE, 0, false, 0, 0, 0 };
+
+               // 3) step through the tasklist adding 'delay' to the '.start_time' of
+               //    each task with '.id' equal to 'id' | reset the '.order' for each
+               //    task as well, regardless of 'id' | then increment the '.order'
+               //    whenever the task's '.start_time' is equal to the previous
+               //    task's '.start_time'
+
+               // 4) push each task into a temporary priority_queue for obvious
+               //    reasons | after the operation is finished, swap the data of the
+               //    temporary priority queue with the data of the tasklist object
 
                priority_queue<task, vector<task>, task> temp;
+
                while ( tasks.empty() == false )
                {
-                    auto t = tasks.top();
-                    tasks.pop();
+                    auto t = tasks.top(); tasks.pop();
 
                     if ( t.id == id )
                     {
                          t.start_time += delay;
                          t.end_time += delay;
                     }
+
+                    t.order = 0;
                     if ( t.start_time == p.start_time )
                     {
                          t.order = p.order + 1;
                     }
-                    p = t;
 
                     temp.push(t);
+                    p = t;
                }
 
                tasks.swap(temp);
@@ -365,6 +393,10 @@ namespace EVENT_TABLE
           return builder_tasklist::build_via_jump_table(input_stream);
      }
 };
+
+bool validator()
+{
+}
 
 int main(int argc, const char ** argv)
 {
