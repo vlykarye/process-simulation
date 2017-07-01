@@ -18,33 +18,35 @@ TO to(FROM const & a)
      return b;
 }
 
-namespace EVENT_TABLE
+namespace project
 {
-     string TOKEN_STRING[] = { "NCORES", "NEW", "CORE", "DISK", "DISPLAY", "INPUT" };
-     enum TOKEN { NCORES, NEW, CORE, DISK, DISPLAY, INPUT, TERMINATE, NONE };
+     string const TASK_STRING[]{ "NCORES", "NEW", "CORE", "DISK", "DISPLAY", "INPUT", "TERMINATE" };
+     enum struct TASK { NCORES, NEW, CORE, DISK, DISPLAY, INPUT, TERMINATE, NONE };
+     enum struct STATE { RUNNING, READY, BLOCKED, NONE };
 
 
-     // { id, start_time, end_time }
+     // { id, end_time }
      struct
           resource
      {
-          int id;    int start_time;    int end_time;
+          int id;    int end_time;
      };
 
-     // { id, request, value, blocking, start_time, end_time, order }
+     // { request, value }
      struct
           task
      {
-          int id;    TOKEN request;    int value;    bool blocking;    int start_time;    int end_time;    int order;
+          TASK request;    int value;
+     };
 
-          bool operator()(task const & a, task const & b) const
-          {
-               //if ( a.start_time == b.start_time )
-               //{
-               //     return (a.order > b.order);
-               //}
-               return (a.start_time < b.start_time);
-          }
+     // { id, tasklist, start_time, end_time, status }
+     struct
+          process
+     {
+          process(queue<task> & new_tasklist)
+               : tasklist(new_tasklist) {}
+
+          int id;    queue<task> tasklist;    int start_time;    int end_time;    STATE status;
      };
 
 
@@ -52,43 +54,76 @@ namespace EVENT_TABLE
           resource_table
      {
      public:
-          resource_table(int count) : rows(count, resource{ -1, -1, -1 }) {};
+          resource_table(int count)
+               : resources(count, resource{ -1, -1 }) {}
 
           bool
                request
                (
-                    task const & requesting_task,
-                    int & next_free_time
+                    process const & requesting_process
                )
           {
                // search for a row that has an '.end_time' less than the requesting
                // task's '.start_time' | if available, update the row and return
                // 'true' | if not available, return false
-
-               next_free_time = rows.at(0).end_time;
-
-               for ( auto & r : rows )
+               for ( auto & r : resources )
                {
-                    if ( r.end_time <= requesting_task.start_time )
+                    if ( r.end_time <= requesting_process.start_time )
                     {
-                         r.id = requesting_task.id;
-                         r.start_time = requesting_task.start_time;
-                         r.end_time = requesting_task.end_time;
+                         r.id = requesting_process.id;
+                         r.end_time = requesting_process.end_time;
                          return true;
                     }
-                    if ( r.end_time < next_free_time )
-                    {
-                         next_free_time = r.end_time;
-                    }
                }
-
                return false;
           }
 
+          int
+               available_time()
+          {
+               int next_endtime = resources.at(0).end_time;
+
+               auto && beg = resources.begin() + 1;
+               auto && end = resources.end();
+               for ( ; beg != end; ++beg )
+               {
+                    auto && r = *beg;
+
+                    if ( r.end_time < next_endtime )
+                    {
+                         next_endtime = r.end_time;
+                    }
+               }
+
+               return next_endtime;
+          }
+
      private:
-          vector<resource> rows;
+          vector<resource> resources;
      };
 
+     class
+          process_table
+     {
+     public:
+          process_table(vector<process> && new_processes)
+               : processes(new_processes) {}
+
+     private:
+          vector<process> processes;
+     };
+
+     class
+          machine
+     {
+     public:
+
+     private:
+          int system_time = 0;
+     };
+
+
+     /*
      class
           tasklist
      {
@@ -229,7 +264,7 @@ namespace EVENT_TABLE
                while ( copy.empty() == false )
                {
                     task const & t = copy.top();
-                    cout << setw(3) << t.id << " " << setw(10) << left << TOKEN_STRING[t.request] << " " << setw(5) << right << t.value << " " << setw(5) << t.start_time << " " << setw(5) << t.end_time << " " << t.blocking << " " << t.order << endl;
+                    cout << setw(3) << t.id << " " << setw(10) << left << TASK_STRING[t.request] << " " << setw(5) << right << t.value << " " << setw(5) << t.start_time << " " << setw(5) << t.end_time << " " << t.blocking << " " << t.order << endl;
                     copy.pop();
                }
                cout << endl;
@@ -244,7 +279,7 @@ namespace EVENT_TABLE
                {
                     count++;
                     task const & t = copy.front();
-                    cout << setw(3) << t.id << " " << setw(10) << left << TOKEN_STRING[t.request] << " " << setw(5) << right << t.value << " " << setw(5) << t.start_time << " " << setw(5) << t.end_time << " " << t.blocking << " " << t.order << endl;
+                    cout << setw(3) << t.id << " " << setw(10) << left << TASK_STRING[t.request] << " " << setw(5) << right << t.value << " " << setw(5) << t.start_time << " " << setw(5) << t.end_time << " " << t.blocking << " " << t.order << endl;
                     copy.pop();
                }
                cout << endl;
@@ -258,7 +293,7 @@ namespace EVENT_TABLE
           {
                // iterate the tasklist checking that the values of each task compared
                // to the previous task do not violate these rules:
-               // 1) 
+               // 1)
 
                // task { id, request, value, blocking, start_time, end_time, order }
                task p{ -1, NONE, -1, false, -1, -1, -1 };
@@ -354,7 +389,7 @@ namespace EVENT_TABLE
                tasks.swap(temp);
           }
      };
-
+     */
 
      // input file
      // {NEW,  t} creates new process at time t
@@ -374,7 +409,7 @@ namespace EVENT_TABLE
      //     tasklist new_table;
      //
      //     string line;
-     //     string token;
+     //     string TASK;
      //     int value;
      //
      //     while ( getline(input_stream, line) )
@@ -389,12 +424,12 @@ namespace EVENT_TABLE
      //          new_row.blocking = true;
      //          new_row.value = v;
      //
-     //          if ( token == "NEW" )
+     //          if ( TASK == "NEW" )
      //          {
      //
      //          }
      //
-     //          if ( token == "DISK" )
+     //          if ( TASK == "DISK" )
      //          {
      //               if ( value == 0 )
      //               {
@@ -421,9 +456,9 @@ namespace EVENT_TABLE
                     tuple<string const, int const> const & pair
                )
           {
-               s = get<0>(pair);         // token
+               s = get<0>(pair);         // TASK
                r.value = get<1>(pair);   // value
-               char const & c = s.at(0); // first character of token
+               char const & c = s.at(0); // first character of TASK
 
                // hash function: c % 4
                // used as index into jump tasklist
@@ -433,7 +468,7 @@ namespace EVENT_TABLE
           }
 
      private:
-          task r = { -1, NONE, true, 0, 0, 0, 0 };
+          task r = { TASK::NONE, -1 };
           string & s = string();
 
           // { id    request    value    blocking    start_time    end_time }
@@ -443,22 +478,18 @@ namespace EVENT_TABLE
           {
                if ( s.at(3) == 'K' )
                {
-                    r.request = DISK;
-                    if ( r.value == 0 ) { r.blocking = false; }
-                    r.value = 10;
+                    r.request = TASK::DISK;
                }
                else
                {
-                    r.request = DISPLAY;
-                    r.blocking = true;
+                    r.request = TASK::DISPLAY;
                }
           };
 
           // INPUT
           void jump_I()
           {
-               r.request = INPUT;
-               r.blocking = true;
+               r.request = TASK::INPUT;
           };
 
           // NCORES / NEW
@@ -466,22 +497,18 @@ namespace EVENT_TABLE
           {
                if ( s.at(1) == 'C' )
                {
-                    r.request = NCORES;
-                    r.blocking = true;
+                    r.request = TASK::NCORES;
                }
                else
                {
-                    r.id = r.id + 1;
-                    r.request = NEW;
-                    r.blocking = true;
+                    r.request = TASK::NEW;
                }
           };
 
           // CORE
           void jump_C()
           {
-               r.request = CORE;
-               r.blocking = true;
+               r.request = TASK::CORE;
           };
 
           // Jump Table
@@ -496,23 +523,41 @@ namespace EVENT_TABLE
           builder_tasklist
      {
      public:
-          static vector<task>
+          void
                build_via_jump_table
                (
-                    istream & input_stream
+                    istream & input_stream,
+                    vector<process> & process_table
                )
           {
-               vector<task> rows;
-
-               builder_task br;
+               queue<task> tasklist;
+               builder_task bt;
                tuple<string, int> pair;
+               int process_id = 0;
+
+               // discard anything that is not "NEW"
                while ( next_pair(pair, input_stream) )
                {
-                    rows.push_back(br.row_via_jump_table(pair));
+                    if ( get<0>(pair) == "NEW" )
+                    {
+                         task t = bt.row_via_jump_table(pair);
+                         break;
+                    }
                }
 
-               initial_time_adjust(rows);
-               return rows;
+               // process reamining lines
+               while ( next_pair(pair, input_stream) )
+               {
+                    if ( get<0>(pair) == "NEW" )
+                    {
+                         process_table.push_back(process(tasklist));
+                         ++process_id;
+                    }
+
+                    task t = bt.row_via_jump_table(pair);
+
+                    process_table.at(process_id).tasklist.push(t);
+               }
           }
      private:
           static bool
@@ -533,45 +578,21 @@ namespace EVENT_TABLE
                }
                return false;
           }
-
-          static void
-               initial_time_adjust
-               (
-                    vector<task> & rows
-               )
-          {
-               // { id    request    value    blocking    start_time    end_time    order }
-               task p = { 0, NONE, 0, false, 0, 0, 0 };
-
-               auto && beg = rows.begin();
-               auto && end = rows.end();
-               for ( ; beg != end; ++beg )
-               {
-                    auto && r = *beg;
-
-                    if ( r.request == NEW )
-                    {
-                         r.start_time = r.value;
-                         r.end_time = r.value;
-                    }
-                    else
-                    {
-                         r.start_time = p.end_time;
-                         r.end_time = r.start_time + r.value;
-                         if ( r.start_time == p.start_time )
-                         {
-                              r.order = p.order + 1;
-                         }
-                    }
-                    p = r;
-               }
-          }
      };
-};
+
+     class
+          builder_process
+     {
+     public:
+
+     private:
+
+     };
+}
 
 int main(int argc, const char ** argv)
 {
-     using namespace EVENT_TABLE;
+     using namespace project;
 
      tasklist t = builder_tasklist::build_via_jump_table(ifstream("1.txt"));
      //t.execute();
