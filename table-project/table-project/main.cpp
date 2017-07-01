@@ -17,8 +17,15 @@ namespace EVENT_TABLE
      string TOKEN_STRING[] = { "NCORES", "NEW", "CORE", "DISK", "DISPLAY", "INPUT" };
      enum TOKEN { NCORES, NEW, CORE, DISK, DISPLAY, INPUT, NONE };
 
-     // need a structure to hold a rows worth of data
-     // { id    request    value    blocking    start_time    end_time     order }
+
+     // { id, start_time, end_time }
+     struct
+          resource
+     {
+          int id;    int start_time;    int end_time;
+     };
+
+     // { id, request, value, blocking, start_time, end_time, order }
      struct
           task
      {
@@ -26,20 +33,61 @@ namespace EVENT_TABLE
 
           bool operator()(task const & a, task const & b) const
           {
-               if ( a.start_time == b.start_time )
-               {
-                    return (a.order > b.order);
-               }
-               return (a.start_time > b.start_time);
+               //if ( a.start_time == b.start_time )
+               //{
+               //     return (a.order > b.order);
+               //}
+               return (a.start_time < b.start_time);
           }
      };
 
-     // make a tasklist to hold history of events
+
+     class
+          resource_table
+     {
+     public:
+          resource_table(int count) : rows(count, resource{ -1, -1, -1 }) {};
+
+          bool
+               request
+               (
+                    task const & requesting_task,
+                    int & next_free_time
+               )
+          {
+               // search for a row that has an '.end_time' less than the requesting
+               // task's '.start_time' | if available, update the row and return
+               // 'true' | if not available, return false
+
+               next_free_time = rows.at(0).end_time;
+
+               for ( auto & r : rows )
+               {
+                    if ( r.end_time <= requesting_task.start_time )
+                    {
+                         r.id = requesting_task.id;
+                         r.start_time = requesting_task.start_time;
+                         r.end_time = requesting_task.end_time;
+                         return true;
+                    }
+                    if ( r.end_time < next_free_time )
+                    {
+                         next_free_time = r.end_time;
+                    }
+               }
+
+               return false;
+          }
+
+     private:
+          vector<resource> rows;
+     };
+
      class
           tasklist
      {
      public:
-          tasklist(vector<task> && rows)
+          tasklist(vector<task> && list_of_tasks)
           {
                // a comparator function similar to the one in struct task that takes
                // into consideration the 'id', as the 'order' is dependent upon it
@@ -66,8 +114,8 @@ namespace EVENT_TABLE
 
                // firstly, the tasks must taken from the vector and pushed into the
                // temporary priority queue defined above
-               auto && beg = rows.begin() + 1;
-               auto && end = rows.end();
+               auto && beg = list_of_tasks.begin() + 1;
+               auto && end = list_of_tasks.end();
                for ( ; beg != end; ++beg )
                {
                     auto && r = *beg;
@@ -80,8 +128,9 @@ namespace EVENT_TABLE
                task p{ -1, NONE, -1, false, -1, -1, -1 };
                while ( temp.empty() == false )
                {
-                    auto t = temp.top();
+                    task t = temp.top();
                     temp.pop();
+
                     t.order = 0;
                     if ( t.start_time == p.start_time ) {
                          t.order = p.order + 1;
@@ -91,23 +140,146 @@ namespace EVENT_TABLE
                }
           }
 
-          void print()
+          void
+               execute()
+          {
+               int number_of_cores = tasks.top().value;
+
+               resource_table core(number_of_cores);
+               resource_table disk(1);
+
+               queue<task> completed_tasks;
+
+               int count = 0;
+               while ( tasks.empty() == false )
+               {
+                    count++;
+                    task t = tasks.top();
+                    tasks.pop();
+
+                    switch ( t.request )
+                    {
+                         case NEW:
+                         {
+                              completed_tasks.push(t);
+                         }
+                         break;
+
+                         case CORE:
+                         {
+                              int next_free_time = 0;
+                              if ( core.request(t, next_free_time) == true )
+                              {
+                                   completed_tasks.push(t);
+                              }
+                              else
+                              {
+                                   cout << "core: " << next_free_time << endl;
+                              }
+                         }
+                         break;
+
+                         case DISK:
+                         {
+                              int next_free_time = 0;
+                              if ( core.request(t, next_free_time) == true )
+                              {
+                                   completed_tasks.push(t);
+                              }
+                              else
+                              {
+                                   cout << "disk: " << next_free_time << endl;
+                              }
+                         }
+                         break;
+
+                         case DISPLAY:
+                         {
+                              completed_tasks.push(t);
+                         }
+                         break;
+
+                         case INPUT:
+                         {
+                              completed_tasks.push(t);
+                         }
+                         break;
+
+                         default:
+                         {
+                              completed_tasks.push(t);
+                         }
+                    }
+               }
+
+               print(completed_tasks);
+          }
+
+          void
+               print()
           {
                auto copy(tasks);
-
-               // cannot iterate a queue
-               vector<task> rows;
                while ( copy.empty() == false )
                {
-                    rows.push_back(copy.top());
+                    task const & t = copy.top();
+                    cout << setw(3) << t.id << " " << setw(10) << left << TOKEN_STRING[t.request] << " " << setw(5) << right << t.value << " " << setw(5) << t.start_time << " " << setw(5) << t.end_time << " " << t.blocking << " " << t.order << endl;
+                    copy.pop();
+               }
+               cout << endl;
+          }
+
+          void
+               print(queue<task> list)
+          {
+               auto copy(list);
+               int count = 0;
+               while ( copy.empty() == false )
+               {
+                    count++;
+                    task const & t = copy.front();
+                    cout << setw(3) << t.id << " " << setw(10) << left << TOKEN_STRING[t.request] << " " << setw(5) << right << t.value << " " << setw(5) << t.start_time << " " << setw(5) << t.end_time << " " << t.blocking << " " << t.order << endl;
+                    copy.pop();
+               }
+               cout << endl;
+               cout << count << endl;
+          }
+
+
+
+          bool
+               validate()
+          {
+               // iterate the tasklist checking that the values of each task compared
+               // to the previous task do not violate these rules:
+               // 1) 
+
+               // task { id, request, value, blocking, start_time, end_time, order }
+               task p{ -1, NONE, -1, false, -1, -1, -1 };
+
+               auto copy(tasks);
+               while ( copy.empty() == false )
+               {
+                    task const & t = copy.top();
+                    if ( t.start_time > t.end_time )
+                    {
+                         return false;
+                    }
+                    if ( t.start_time < p.start_time )
+                    {
+                         return false;
+                    }
+                    if ( t.order != 0 )
+                    {
+                         if ( t.id < p.id )
+                         {
+                              return false;
+                         }
+                    }
+                    p = t;
                     copy.pop();
                }
 
-               for ( task r : rows )
-               {
-                    cout << setw(3) << r.id << " " << setw(10) << left << TOKEN_STRING[r.request] << " " << setw(5) << right << r.value << " " << setw(5) << r.start_time << " " << setw(5) << r.end_time << " " << r.blocking << " " << r.order << endl;
-               }
-               cout << endl;
+               return true;
           }
 
      private:
@@ -140,11 +312,11 @@ namespace EVENT_TABLE
                // task { id, request, value, blocking, start_time, end_time, order }
                task p{ 0, NONE, 0, false, 0, 0, 0 };
 
-               // 3) step through the tasklist adding 'delay' to the '.start_time' of
-               //    each task with '.id' equal to 'id' | reset the '.order' for each
-               //    task as well, regardless of 'id' | then increment the '.order'
-               //    whenever the task's '.start_time' is equal to the previous
-               //    task's '.start_time'
+               // 3) step through the tasklist adding 'delay' to the '.start_time'
+               //    and '.end_time' of each task with '.id' equal to 'id' | reset
+               //    the '.order' for each task as well, regardless of 'id' | then
+               //    increment the '.order' whenever the task's '.start_time' is
+               //    equal to the previous task's '.start_time'
 
                // 4) push each task into a temporary priority_queue for obvious
                //    reasons | after the operation is finished, swap the data of the
@@ -175,6 +347,7 @@ namespace EVENT_TABLE
                tasks.swap(temp);
           }
      };
+
 
      // input file
      // {NEW,  t} creates new process at time t
@@ -387,23 +560,16 @@ namespace EVENT_TABLE
                }
           }
      };
-
-     tasklist build_from_stream(istream & input_stream)
-     {
-          return builder_tasklist::build_via_jump_table(input_stream);
-     }
 };
-
-bool validator()
-{
-}
 
 int main(int argc, const char ** argv)
 {
      using namespace EVENT_TABLE;
 
-     tasklist t = build_from_stream(ifstream("1.txt"));
+     tasklist t = builder_tasklist::build_via_jump_table(ifstream("1.txt"));
+     //t.execute();
      t.print();
+     cout << ((t.validate() == true) ? "true" : "false") << endl;
      //t.time_adjust(6);
      //t.print();
 
