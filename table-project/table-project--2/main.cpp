@@ -530,33 +530,29 @@ namespace project
                     vector<process> & process_table
                )
           {
-               queue<task> tasklist;
                builder_task bt;
                tuple<string, int> pair;
-               int process_id = 0;
 
+               process_table.push_back(process(queue<task>()));
                // discard anything that is not "NEW"
                while ( next_pair(pair, input_stream) )
                {
-                    if ( get<0>(pair) == "NEW" )
+                    task t = bt.row_via_jump_table(pair);
+                    if ( t.request == TASK::NEW )
                     {
-                         task t = bt.row_via_jump_table(pair);
+                         process_table.back().tasklist.push(t);
                          break;
                     }
                }
-
                // process reamining lines
                while ( next_pair(pair, input_stream) )
                {
-                    if ( get<0>(pair) == "NEW" )
-                    {
-                         process_table.push_back(process(tasklist));
-                         ++process_id;
-                    }
-
                     task t = bt.row_via_jump_table(pair);
-
-                    process_table.at(process_id).tasklist.push(t);
+                    if ( t.request == TASK::NEW )
+                    {
+                         process_table.push_back(process(queue<task>()));
+                    }
+                    process_table.back().tasklist.push(t);
                }
           }
      private:
@@ -594,10 +590,10 @@ int main(int argc, const char ** argv)
 {
      using namespace project;
 
-     tasklist t = builder_tasklist::build_via_jump_table(ifstream("1.txt"));
+     //tasklist t = builder_tasklist::build_via_jump_table(ifstream("1.txt"));
      //t.execute();
-     t.print();
-     cout << ((t.validate() == true) ? "true" : "false") << endl;
+     //t.print();
+     //cout << ((t.validate() == true) ? "true" : "false") << endl;
      //t.time_adjust(6);
      //t.print();
 
