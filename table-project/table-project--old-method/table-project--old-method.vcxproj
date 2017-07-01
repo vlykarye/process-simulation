@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{1C07ACD3-6777-4E1E-B4F0-DE64030DF32B}</ProjectGuid>
+    <ProjectGuid>{4D52F212-60A3-4066-88D8-8DED69B1353F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>tableprojectsplitprocesses</RootNamespace>
+    <RootNamespace>tableprojectoldmethod</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main--split-processes.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="1.txt" />

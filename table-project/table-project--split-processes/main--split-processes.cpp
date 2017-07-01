@@ -13,6 +13,7 @@ int nCores = 0;
 int coresAvailable = 0;
 bool diskAvailable = true;
 int processesInMemory = 0;
+int pushTime = 0;
 
 // clock time
 // number of cores
@@ -55,14 +56,22 @@ struct process
      }
 
      int nextTime = 0;
+     int pushTime = 0;
      struct compareTIME
      {
-          bool operator()(process & a, process & b) const
+          bool operator()(process const & a, process const & b)
           {
                if ( a.nextTime > b.nextTime )
                {
                     return true;
                }
+               //if ( a.nextTime == b.nextTime )
+               //{
+               //     if ( a.pushTime > b.pushTime )
+               //     {
+               //          return true;
+               //     }
+               //}
                return false;
           }
      };
@@ -109,6 +118,7 @@ void preemptProcess(process p)
 
      // Send it back to the waiting queue.
      p.status = "READY";
+     p.pushTime = pushTime++;
      waiting.push(p);
 }
 
@@ -182,6 +192,7 @@ void handleWaiting()
      //cout << "Run until " << p.nextTime << endl;
 
      // Send it to the running queue.
+     p.pushTime = pushTime++;
      running.push(p);
 }
 
@@ -208,12 +219,14 @@ void handleRunning()
      p.finishEvent();
      updateTable(p);
 
+     p.pushTime = pushTime++;
      waiting.push(p);
 }
 
 void processInput()
 {
      //read into the file, and create an input data table
+     //ifstream file("input11.txt");
      ifstream file("1.txt");
      if ( !file.is_open() )
      {
@@ -269,6 +282,7 @@ void processInput()
      if ( processesInMemory > 0 )
      {
           // push the complete process onto the waiting queue
+          p.pushTime = pushTime++;
           waiting.push(p);
           processTable.insert(std::pair<int, process>(p.id, p));
      }

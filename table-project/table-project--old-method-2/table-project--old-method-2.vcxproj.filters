@@ -15,11 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main--split-processes.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="1.txt" />
+    <Text Include="2.ans.txt" />
+    <Text Include="2.txt" />
   </ItemGroup>
 </Project>

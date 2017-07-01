@@ -1,0 +1,347 @@
+-- ARRIVAL event for process 0 at time 0 ms
+-- Process 0 starts at time 0 ms
+-- Process 0 requests a core at time 0 ms for 200 ms
+-- Process 0 gets a core at time 0 ms
+-- Process 0 will release a core at time 200 ms
+-- ARRIVAL event for process 1 at time 17 ms
+-- Process 1 starts at time 17 ms
+-- Process 1 requests a core at time 17 ms for 43 ms
+-- Process 1 gets a core at time 17 ms
+-- Process 1 will release a core at time 60 ms
+-- ARRIVAL event for process 2 at time 35 ms
+-- Process 2 starts at time 35 ms
+-- Process 2 requests a core at time 35 ms for 43 ms
+-- Process 2 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 1 at time 60 ms
+-- Process 2 gets a core at time 60 ms for 43 ms
+-- Process 2 will release a core at time 103 ms
+-- Process 1 requests user interaction at time 60 ms for 103 ms
+-- Process 1 will complete user interaction at time 163 ms
+-- CORE completion event for process 2 at time 103 ms
+-- Process 2 requests user interaction at time 103 ms for 104 ms
+-- Process 2 will complete user interaction at time 207 ms
+-- USER completion event for process 1 at time 163 ms
+-- Process 1 requests a core at time 163 ms for 33 ms
+-- Process 1 gets a core at time 163 ms
+-- Process 1 will release a core at time 196 ms
+-- CORE completion event for process 1 at time 196 ms
+-- Process 1 requests user interaction at time 196 ms for 300 ms
+-- Process 1 will complete user interaction at time 496 ms
+-- CORE completion event for process 0 at time 200 ms
+-- Process 0 requests disk access at time 200 ms for 10 ms
+-- Process 0 will release the disk at time 210 ms
+-- Process 0 requests a core at time 200 ms for 15 ms
+-- Process 0 gets a core at time 200 ms
+-- Process 0 will release a core at time 215 ms
+-- USER completion event for process 2 at time 207 ms
+-- Process 2 requests a core at time 207 ms for 34 ms
+-- Process 2 gets a core at time 207 ms
+-- Process 2 will release a core at time 241 ms
+-- DISK completion event for process 0 at time 210 ms
+-- CORE completion event for process 0 at time 215 ms
+-- Process 0 requests user interaction at time 215 ms for 100 ms
+-- Process 0 will complete user interaction at time 315 ms
+-- CORE completion event for process 2 at time 241 ms
+-- Process 2 requests user interaction at time 241 ms for 300 ms
+-- Process 2 will complete user interaction at time 541 ms
+-- USER completion event for process 0 at time 315 ms
+-- Process 0 requests a core at time 315 ms for 20 ms
+-- Process 0 gets a core at time 315 ms
+-- Process 0 will release a core at time 335 ms
+-- CORE completion event for process 0 at time 335 ms
+-- Process 0 requests user interaction at time 335 ms for 900 ms
+-- Process 0 will complete user interaction at time 1235 ms
+-- USER completion event for process 1 at time 496 ms
+-- Process 1 requests a core at time 496 ms for 153 ms
+-- Process 1 gets a core at time 496 ms
+-- Process 1 will release a core at time 649 ms
+-- USER completion event for process 2 at time 541 ms
+-- Process 2 requests a core at time 541 ms for 154 ms
+-- Process 2 gets a core at time 541 ms
+-- Process 2 will release a core at time 695 ms
+-- CORE completion event for process 1 at time 649 ms
+-- Process 1 requests disk access at time 649 ms for 10 ms
+-- Process 1 will release the disk at time 659 ms
+-- DISK completion event for process 1 at time 659 ms
+-- Process 1 requests a core at time 659 ms for 123 ms
+-- Process 1 gets a core at time 659 ms
+-- Process 1 will release a core at time 782 ms
+-- CORE completion event for process 2 at time 695 ms
+-- Process 2 requests disk access at time 695 ms for 10 ms
+-- Process 2 will release the disk at time 705 ms
+-- DISK completion event for process 2 at time 705 ms
+-- Process 2 requests a core at time 705 ms for 124 ms
+-- Process 2 gets a core at time 705 ms
+-- Process 2 will release a core at time 829 ms
+-- CORE completion event for process 1 at time 782 ms
+-- Process 1 requests disk access at time 782 ms for 10 ms
+-- Process 1 will release the disk at time 792 ms
+-- DISK completion event for process 1 at time 792 ms
+-- Process 1 requests a core at time 792 ms for 123 ms
+-- Process 1 gets a core at time 792 ms
+-- Process 1 will release a core at time 915 ms
+-- CORE completion event for process 2 at time 829 ms
+-- Process 2 requests disk access at time 829 ms for 10 ms
+-- Process 2 will release the disk at time 839 ms
+-- DISK completion event for process 2 at time 839 ms
+-- Process 2 requests a core at time 839 ms for 124 ms
+-- Process 2 gets a core at time 839 ms
+-- Process 2 will release a core at time 963 ms
+-- CORE completion event for process 1 at time 915 ms
+-- Process 1 requests disk access at time 915 ms for 10 ms
+-- Process 1 will release the disk at time 925 ms
+-- DISK completion event for process 1 at time 925 ms
+-- Process 1 requests a core at time 925 ms for 237 ms
+-- Process 1 gets a core at time 925 ms
+-- Process 1 will release a core at time 1162 ms
+-- CORE completion event for process 2 at time 963 ms
+-- Process 2 requests disk access at time 963 ms for 10 ms
+-- Process 2 will release the disk at time 973 ms
+-- DISK completion event for process 2 at time 973 ms
+-- Process 2 requests a core at time 973 ms for 237 ms
+-- Process 2 gets a core at time 973 ms
+-- Process 2 will release a core at time 1210 ms
+-- CORE completion event for process 1 at time 1162 ms
+-- Process 1 requests disk access at time 1162 ms for 10 ms
+-- Process 1 will release the disk at time 1172 ms
+-- DISK completion event for process 1 at time 1172 ms
+-- Process 1 requests a core at time 1172 ms for 223 ms
+-- Process 1 gets a core at time 1172 ms
+-- Process 1 will release a core at time 1395 ms
+-- CORE completion event for process 2 at time 1210 ms
+-- Process 2 requests disk access at time 1210 ms for 10 ms
+-- Process 2 will release the disk at time 1220 ms
+-- DISK completion event for process 2 at time 1220 ms
+-- Process 2 requests a core at time 1220 ms for 224 ms
+-- Process 2 gets a core at time 1220 ms
+-- Process 2 will release a core at time 1444 ms
+-- USER completion event for process 0 at time 1235 ms
+-- Process 0 requests a core at time 1235 ms for 30 ms
+-- Process 0 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 1 at time 1395 ms
+-- Process 0 gets a core at time 1395 ms for 30 ms
+-- Process 0 will release a core at time 1425 ms
+-- Process 1 requests disk access at time 1395 ms for 10 ms
+-- Process 1 will release the disk at time 1405 ms
+-- DISK completion event for process 1 at time 1405 ms
+-- Process 1 requests a core at time 1405 ms for 243 ms
+-- Process 1 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 0 at time 1425 ms
+-- Process 1 gets a core at time 1425 ms for 243 ms
+-- Process 1 will release a core at time 1668 ms
+-- Process 0 requests disk access at time 1425 ms for 10 ms
+-- Process 0 will release the disk at time 1435 ms
+-- DISK completion event for process 0 at time 1435 ms
+-- Process 0 requests a core at time 1435 ms for 30 ms
+-- Process 0 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 2 at time 1444 ms
+-- Process 0 gets a core at time 1444 ms for 30 ms
+-- Process 0 will release a core at time 1474 ms
+-- Process 2 requests disk access at time 1444 ms for 10 ms
+-- Process 2 will release the disk at time 1454 ms
+-- DISK completion event for process 2 at time 1454 ms
+-- Process 2 requests a core at time 1454 ms for 237 ms
+-- Process 2 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 0 at time 1474 ms
+-- Process 2 gets a core at time 1474 ms for 237 ms
+-- Process 2 will release a core at time 1711 ms
+-- Process 0 requests disk access at time 1474 ms for 10 ms
+-- Process 0 will release the disk at time 1484 ms
+-- DISK completion event for process 0 at time 1484 ms
+-- Process 0 requests a core at time 1484 ms for 300 ms
+-- Process 0 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 1 at time 1668 ms
+-- Process 0 gets a core at time 1668 ms for 300 ms
+-- Process 0 will release a core at time 1968 ms
+-- Process 1 requests disk access at time 1668 ms for 10 ms
+-- Process 1 will release the disk at time 1678 ms
+-- DISK completion event for process 1 at time 1678 ms
+-- Process 1 requests a core at time 1678 ms for 237 ms
+-- Process 1 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 2 at time 1711 ms
+-- Process 1 gets a core at time 1711 ms for 237 ms
+-- Process 1 will release a core at time 1948 ms
+-- Process 2 requests disk access at time 1711 ms for 10 ms
+-- Process 2 will release the disk at time 1721 ms
+-- DISK completion event for process 2 at time 1721 ms
+-- Process 2 requests a core at time 1721 ms for 237 ms
+-- Process 2 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 1 at time 1948 ms
+-- Process 2 gets a core at time 1948 ms for 237 ms
+-- Process 2 will release a core at time 2185 ms
+-- Process 1 requests disk access at time 1948 ms for 10 ms
+-- Process 1 will release the disk at time 1958 ms
+-- DISK completion event for process 1 at time 1958 ms
+-- Process 1 requests a core at time 1958 ms for 237 ms
+-- Process 1 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 0 at time 1968 ms
+-- Process 1 gets a core at time 1968 ms for 237 ms
+-- Process 1 will release a core at time 2205 ms
+-- Process 0 requests disk access at time 1968 ms for 10 ms
+-- Process 0 will release the disk at time 1978 ms
+-- DISK completion event for process 0 at time 1978 ms
+-- Process 0 requests a core at time 1978 ms for 590 ms
+-- Process 0 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 2 at time 2185 ms
+-- Process 0 gets a core at time 2185 ms for 590 ms
+-- Process 0 will release a core at time 2775 ms
+-- Process 2 requests disk access at time 2185 ms for 10 ms
+-- Process 2 will release the disk at time 2195 ms
+-- DISK completion event for process 2 at time 2195 ms
+-- Process 2 requests a core at time 2195 ms for 237 ms
+-- Process 2 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 1 at time 2205 ms
+-- Process 2 gets a core at time 2205 ms for 237 ms
+-- Process 2 will release a core at time 2442 ms
+-- Process 1 requests disk access at time 2205 ms for 10 ms
+-- Process 1 will release the disk at time 2215 ms
+-- DISK completion event for process 1 at time 2215 ms
+-- Process 1 requests a core at time 2215 ms for 237 ms
+-- Process 1 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 2 at time 2442 ms
+-- Process 1 gets a core at time 2442 ms for 237 ms
+-- Process 1 will release a core at time 2679 ms
+-- Process 2 requests disk access at time 2442 ms for 10 ms
+-- Process 2 will release the disk at time 2452 ms
+-- DISK completion event for process 2 at time 2452 ms
+-- Process 2 requests a core at time 2452 ms for 237 ms
+-- Process 2 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 1 at time 2679 ms
+-- Process 2 gets a core at time 2679 ms for 237 ms
+-- Process 2 will release a core at time 2916 ms
+-- Process 1 requests disk access at time 2679 ms for 10 ms
+-- Process 1 will release the disk at time 2689 ms
+-- Process 1 requests a core at time 2679 ms for 33 ms
+-- Process 1 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- DISK completion event for process 1 at time 2689 ms
+-- CORE completion event for process 0 at time 2775 ms
+-- Process 1 gets a core at time 2775 ms for 33 ms
+-- Process 1 will release a core at time 2808 ms
+-- Process 0 requests disk access at time 2775 ms for 10 ms
+-- Process 0 will release the disk at time 2785 ms
+-- DISK completion event for process 0 at time 2785 ms
+-- Process 0 requests a core at time 2785 ms for 360 ms
+-- Process 0 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- CORE completion event for process 1 at time 2808 ms
+-- Process 0 gets a core at time 2808 ms for 360 ms
+-- Process 0 will release a core at time 3168 ms
+-- Process 1 requests disk access at time 2808 ms for 10 ms
+-- Process 1 will release the disk at time 2818 ms
+-- Process 1 requests a core at time 2808 ms for 23 ms
+-- Process 1 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- DISK completion event for process 1 at time 2818 ms
+-- CORE completion event for process 2 at time 2916 ms
+-- Process 1 gets a core at time 2916 ms for 23 ms
+-- Process 1 will release a core at time 2939 ms
+-- Process 2 requests disk access at time 2916 ms for 10 ms
+-- Process 2 will release the disk at time 2926 ms
+-- Process 2 requests a core at time 2916 ms for 34 ms
+-- Process 2 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- DISK completion event for process 2 at time 2926 ms
+-- CORE completion event for process 1 at time 2939 ms
+-- Process 2 gets a core at time 2939 ms for 34 ms
+-- Process 2 will release a core at time 2973 ms
+-- Process 1 requests disk access at time 2939 ms for 10 ms
+-- Process 1 will release the disk at time 2949 ms
+-- Process 1 requests a core at time 2939 ms for 33 ms
+-- Process 1 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- DISK completion event for process 1 at time 2949 ms
+-- CORE completion event for process 2 at time 2973 ms
+-- Process 1 gets a core at time 2973 ms for 33 ms
+-- Process 1 will release a core at time 3006 ms
+-- Process 2 requests disk access at time 2973 ms for 10 ms
+-- Process 2 will release the disk at time 2983 ms
+-- Process 2 requests a core at time 2973 ms for 24 ms
+-- Process 2 will wait in ready queue
+-- Ready queue now contains 1 ready process(es)
+-- DISK completion event for process 2 at time 2983 ms
+-- CORE completion event for process 1 at time 3006 ms
+-- Process 2 gets a core at time 3006 ms for 24 ms
+-- Process 2 will release a core at time 3030 ms
+-- Process 1 terminates at time 3006 ms
+ 
+CURRENT STATE OF THE SYSTEM AT TIME 3006:
+Current number of busy cores: 2 
+Process 0 is performing a CORE step
+Process 2 is performing a CORE step
+READY QUEUE:
+empty
+DISK QUEUE:
+empty
+PROCESS TABLE:
+Process 0 started at 0 is RUNNING
+Process 1 started at 17 is TERMINATED
+Process 2 started at 35 is RUNNING
+ 
+-- CORE completion event for process 2 at time 3030 ms
+-- Process 2 requests disk access at time 3030 ms for 10 ms
+-- Process 2 will release the disk at time 3040 ms
+-- Process 2 requests a core at time 3030 ms for 34 ms
+-- Process 2 gets a core at time 3030 ms
+-- Process 2 will release a core at time 3064 ms
+-- DISK completion event for process 2 at time 3040 ms
+-- CORE completion event for process 2 at time 3064 ms
+-- Process 2 terminates at time 3064 ms
+ 
+CURRENT STATE OF THE SYSTEM AT TIME 3064:
+Current number of busy cores: 1 
+Process 0 is performing a CORE step
+READY QUEUE:
+empty
+DISK QUEUE:
+empty
+PROCESS TABLE:
+Process 0 started at 0 is RUNNING
+Process 2 started at 35 is TERMINATED
+ 
+-- CORE completion event for process 0 at time 3168 ms
+-- Process 0 requests disk access at time 3168 ms for 10 ms
+-- Process 0 will release the disk at time 3178 ms
+-- DISK completion event for process 0 at time 3178 ms
+-- Process 0 requests a core at time 3178 ms for 300 ms
+-- Process 0 gets a core at time 3178 ms
+-- Process 0 will release a core at time 3478 ms
+-- CORE completion event for process 0 at time 3478 ms
+-- Process 0 requests disk access at time 3478 ms for 10 ms
+-- Process 0 will release the disk at time 3488 ms
+-- DISK completion event for process 0 at time 3488 ms
+-- Process 0 requests a core at time 3488 ms for 500 ms
+-- Process 0 gets a core at time 3488 ms
+-- Process 0 will release a core at time 3988 ms
+-- CORE completion event for process 0 at time 3988 ms
+-- Process 0 requests disk access at time 3988 ms for 10 ms
+-- Process 0 will release the disk at time 3998 ms
+-- DISK completion event for process 0 at time 3998 ms
+-- Process 0 requests a core at time 3998 ms for 360 ms
+-- Process 0 gets a core at time 3998 ms
+-- Process 0 will release a core at time 4358 ms
+-- CORE completion event for process 0 at time 4358 ms
+-- Process 0 terminates at time 4358 ms
+ 
+CURRENT STATE OF THE SYSTEM AT TIME 4358:
+Current number of busy cores: 0 
+READY QUEUE:
+empty
+DISK QUEUE:
+empty
+PROCESS TABLE:
+Process 0 started at 0 is TERMINATED
+ 
