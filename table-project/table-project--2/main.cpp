@@ -285,7 +285,9 @@ namespace project
                builder_task bt;
                tuple<string, int> pair;
 
+               int pid = 0;
                process_table.push_back(process(queue<task>()));
+               process_table.back().id = ++pid;
                // discard anything that is not "NEW"
                while ( next_pair(pair, input_stream) )
                {
@@ -303,6 +305,7 @@ namespace project
                     if ( t.request == TASK::NEW )
                     {
                          process_table.push_back(process(queue<task>()));
+                         process_table.back().id = ++pid;
                     }
                     process_table.back().tasklist.push(t);
                }
