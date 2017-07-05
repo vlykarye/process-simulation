@@ -1,10 +1,4 @@
-#include <iostream>                           // several standard stream objects
-#include <string>                             // std::basic_string class template
-#include <sstream>                            // std::basic_stringstream, std::basic_istringstream, std::basic_ostringstream class templates and several typedefs
-#include <fstream>                            // std::basic_fstream, std::basic_ifstream, std::basic_ofstream class templates and several typedefs
-#include <map>                                // std::map and std::multimap associative containers
-#include <queue>                              // std::queue and std::priority_queue container adaptors
-#include <iomanip>
+#include "stdafx.h"
 
 using namespace std;
 
@@ -66,7 +60,9 @@ namespace project
           resource_table() {}
 
           resource_table(int count)
-               : resources(count, resource{ -1, -1 }) {}
+               : resources(count, resource{ -1, -1 })
+          {
+          }
 
           bool
                request
@@ -120,7 +116,9 @@ namespace project
           process_table() {}
 
           process_table(vector<process> && new_processes)
-               : processes(new_processes) {}
+               : processes(new_processes)
+          {
+          }
 
           void
                print()

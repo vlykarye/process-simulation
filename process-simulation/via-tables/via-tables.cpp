@@ -132,7 +132,8 @@ namespace EVENT_TABLE
                     temp.pop();
 
                     t.order = 0;
-                    if ( t.start_time == p.start_time ) {
+                    if ( t.start_time == p.start_time )
+                    {
                          t.order = p.order + 1;
                     }
                     p = t;
