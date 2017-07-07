@@ -111,7 +111,7 @@ namespace sim
      public:
           process
           (
-               uint           process_id,
+               uint process_id,
                queue<task> && process_tasks
           ) :
                mid(process_id),
@@ -149,6 +149,7 @@ namespace sim
           queue<task> mtasks;
      };
 
+     /// DONE mostly
      class process_builder
      {
      public:
@@ -210,8 +211,8 @@ namespace sim
                grab_tasks
                (
                     tuple<string, int> & pair, // out
-                    queue<task> & new_tasks, // out
-                    istream & input_stream // in
+                    queue<task> & new_tasks,   // out
+                    istream & input_stream     // in
                )
           {
                while ( next_pair(pair, input_stream) )
@@ -249,20 +250,6 @@ namespace sim
      class ProcessTable
      {
      public:
-          ProcessTable() = default;
-          ProcessTable(const ProcessTable &) = default;
-          ProcessTable &operator=(const ProcessTable &) = default;
-          ~ProcessTable() = default;
-
-          void init()
-          {
-               for ( auto & p : processes )
-               {
-                    p.start_time = p.tasks.front().request_time;
-                    p.end_time = p.tasks.front().request_time;
-               }
-          }
-
           bool get(int time, TASKS task, int & pid)
           {
                for ( auto & p : processes )
@@ -350,7 +337,7 @@ namespace sim
                return pid;
           }
 
-          vector<Process> processes;
+          vector<process> processes;
 
      private:
 
@@ -430,25 +417,23 @@ namespace sim
 
      };
 
-     class Machine
+     class machine
      {
      public:
-          Machine() = default;
-          Machine(ifstream && input_stream)
+          machine(ifstream && input_stream)
           {
-               tuple<string, int> pair;
-               Builder_TaskList::next_pair(pair, input_stream);
-               int ncores = get<1>(pair);
-               Builder_TaskList::build_process_table(input_stream, pt.processes);
-               core.resources = vector<Resource>(ncores);
+               queue<task> settings;
+               vector<process> process_list;
+
+               process_builder::
+                    build_process_table(settings, pt.processes, input_stream);
+
+               core.resources = vector<Resource>(settings.front().value);
                disk.resources = vector<Resource>(1);
-               pt.init();
           }
 
-          Machine &operator=(const Machine &) = default;
-          ~Machine() = default;
-
-          void executing_tasks()
+          void
+               run()
           {
                while ( pt.processes.empty() == false )
                {
@@ -656,8 +641,8 @@ int main(int argc, char *argv[])
      // string filename = am.get("filename");
 
      // Used for debugging on Visual Studio
-     Hw1::Machine m(ifstream("1.txt"));
-     m.executing_tasks();
+     sim::machine system(ifstream("1.txt"));
+     system.run();
 
 
      // You MUST use I/O redirection
