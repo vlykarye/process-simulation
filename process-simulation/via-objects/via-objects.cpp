@@ -12,6 +12,8 @@ using namespace std;
 
 namespace sim
 {
+     typedef unsigned int uint;
+
      // TASK enumeration
 
      enum class
@@ -76,38 +78,64 @@ namespace sim
 
      // High Level Objects
 
+     /// DONE
      class task
      {
      public:
-          task(string task_token, int task_value)
-          {
-               token = to_task(task_token);
-               value = task_value;
-          }
+          task
+          (
+               string task_token,
+               int    task_value
+          ) :
+               token(to_task(task_token)),
+               value(task_value)
+          {}
 
-          task(tuple<string, int> pair)
-          {
-               token = to_task(get<0>(pair));
-               value = get<1>(pair);
-          }
+          task
+          (
+               tuple<string, int> pair
+          ) :
+               token(to_task(get<0>(pair))),
+               value(get<1>(pair))
+          {}
 
-          TASK token;
-          unsigned int value;
+          // tasks should not be modified once created
+          TASK const token;
+          uint const value;
      };
 
+     /// TODO
      class process
      {
      public:
-          process(int id)
-          {
-               pid = id;
-          }
+          process
+          (
+               uint id
+          ) :
+               mid(id),
+               mtime_start(0),
+               mtime_next(0),
+               mtime_end(0)
+          {}
 
-          int id;
-          int start_time;
-          int end_time;
-          queue<task> tasks;
-          STATE state;
+          uint const & id = mid;
+
+          uint const & start_time = mtime_start;
+          uint const & next_time = mtime_next;
+          uint const & end_time = mtime_end;
+
+          STATE const & state = mstate;
+          queue<task> const & tasks = mtasks;
+
+     private:
+          uint mid;
+
+          uint mtime_start;
+          uint mtime_next;
+          uint mtime_end;
+
+          STATE mstate;
+          queue<task> mtasks;
      };
 
      class Builder_TaskList
