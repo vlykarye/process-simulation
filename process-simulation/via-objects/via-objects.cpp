@@ -85,7 +85,7 @@ namespace sim
           task
           (
                string task_token,
-               int    task_value
+               int task_value
           ) :
                token(to_task(task_token)),
                value(task_value)
@@ -105,12 +105,13 @@ namespace sim
      };
 
      /// TODO
+     /// SIDE EFFECT? reference member and copy constructor
      class process
      {
      public:
           process
           (
-               uint process_id,
+               uint           process_id,
                queue<task> && process_tasks
           ) :
                mid(process_id),
@@ -124,6 +125,9 @@ namespace sim
                mtime_next = mtasks.front().value;
                mtime_end = mtasks.front().value;
           }
+
+          // testing reference member idea
+          // allows reading but not writing, sans method call
 
           uint const & id = mid;
 
@@ -145,23 +149,53 @@ namespace sim
           queue<task> mtasks;
      };
 
-     class Builder_TaskList
+     class process_builder
      {
      public:
-          Builder_TaskList() = default;
-          Builder_TaskList(const Builder_TaskList &) = default;
-          Builder_TaskList &operator=(const Builder_TaskList &) = default;
-          ~Builder_TaskList() = default;
+          static void
+               build_process_table
+               (
+                    queue<task> & settings,          // out
+                    vector<process> & new_processes, // out
+                    istream & input_stream           // in
+               )
+          {
+               tuple<string, int> pair;
+               queue<task> new_tasks;
 
-          static bool next_pair(tuple<string, int> & pair, istream & input_stream)
+               // push non-process tasks onto queue until first NEW token appears
+               // store non-process tasks into settings list
+               // push the NEW task within 'pair' onto now empty task queue
+
+               if ( grab_tasks(pair, new_tasks, input_stream) == false ) { return; }
+               settings.swap(new_tasks);
+               new_tasks.push(task(pair));
+
+               while ( grab_tasks(pair, new_tasks, input_stream) )
+               {
+                    // store process tasks into process list
+                    // push the NEW task within 'pair' onto now empty task queue
+
+                    push_process(new_processes, new_tasks);
+                    new_tasks.push(task(pair));
+               }
+               push_process(new_processes, new_tasks);
+          }
+
+     private:
+          // input handling
+          /// WARNING: minimal validation
+          static bool
+               next_pair
+               (
+                    tuple<string, int> & pair,
+                    istream & input_stream
+               )
           {
                string line;
                while ( getline(input_stream, line) )
                {
-                    if ( line.empty() )
-                    {
-                         continue;
-                    }
+                    if ( line.empty() ) { continue; }
                     stringstream ss(line);
                     ss >> get<0>(pair);
                     ss >> get<1>(pair);
@@ -170,53 +204,46 @@ namespace sim
                return false;
           }
 
-          static void build_process_table(istream & input_stream, vector<Process> & process_table)
+          // consumes lines until next NEW token or end of file appears
+          // while pushing the tasks onto queue
+          static bool
+               grab_tasks
+               (
+                    tuple<string, int> & pair, // out
+                    queue<task> & new_tasks, // out
+                    istream & input_stream // in
+               )
           {
-               tuple<string, int> pair;
-
-               queue<Task> tl;
-               int pid = 0;
-               // discard anything that is not "NEW"
                while ( next_pair(pair, input_stream) )
                {
-                    Task t(pair);
-                    if ( t.task_name == TASKS::NEW )
+                    if ( to_task(get<0>(pair)) == TASK::NEW )
                     {
-                         tl.push(t);
-                         break;
+                         return true;
                     }
+                    new_tasks.push(task(pair));
                }
-               // Process reamining lines
-               while ( next_pair(pair, input_stream) )
-               {
-                    Task t(pair);
-                    if ( t.task_name == TASKS::NEW )
-                    {
-                         Process p(pid);
-                         pid++;
-                         tuple<string, int> newp;
-                         get<0>(newp) = "TERMINATE";
-                         get<1>(newp) = 0;
-                         tl.push(Task(newp));
-                         p.tasks = tl; // Copying queue into process
-                         process_table.push_back(p);
-                         tl = queue<Task>(); // Clearing queue
-                    }
-                    tl.push(t);
-               }
-               Process p(pid);
-               pid++;
-               tuple<string, int> newp;
-               get<0>(newp) = "TERMINATE";
-               get<1>(newp) = 0;
-               tl.push(Task(newp));
-               p.tasks = tl; // Copying queue into process
-               process_table.push_back(p);
-               tl = queue<Task>(); // Clearing queue
+               return false;
           }
 
-     private:
+          // push a new process with the data from the task queue
+          static void
+               push_process
+               (
+                    vector<process> & new_processes, // out
+                    queue<task> & new_tasks
+               )
+          {
+               // push a terminate task
+               new_tasks.push(task("TERMINATE", 0));
 
+               // move queue data into new process
+               new_processes.push_back(
+                    process(
+                         new_processes.size(), // process ids start at 0
+                         std::move(new_tasks)  // essentially a swap call
+                    )
+               );
+          }
      };
 
      class ProcessTable
