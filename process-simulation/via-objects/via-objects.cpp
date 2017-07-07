@@ -76,43 +76,38 @@ namespace sim
 
      // High Level Objects
 
-     class Task
+     class task
      {
      public:
-          Task(tuple<string, int> pair)
+          task(string task_token, int task_value)
           {
-               task_name = convert_to_token(get<0>(pair));
-               request_time = get<1>(pair);
+               token = to_task(task_token);
+               value = task_value;
           }
-          Task(const Task &) = default;
-          Task &operator=(const Task &) = default;
-          ~Task() = default;
 
-          TASKS task_name;
-          int request_time = 0;
+          task(tuple<string, int> pair)
+          {
+               token = to_task(get<0>(pair));
+               value = get<1>(pair);
+          }
 
-     private:
+          TASK token;
+          unsigned int value;
      };
 
-     class Process
+     class process
      {
      public:
-          Process(int id)
+          process(int id)
           {
                pid = id;
           }
-          Process(const Process &) = default;
-          Process &operator=(const Process &) = default;
-          ~Process() = default;
 
-          queue<Task> tasks;
-          int pid = 0;
-          int start_time = 0;
-          int end_time = 0;
-          STATES state;
-
-     private:
-
+          int id;
+          int start_time;
+          int end_time;
+          queue<task> tasks;
+          STATE state;
      };
 
      class Builder_TaskList
