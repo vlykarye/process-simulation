@@ -51,7 +51,7 @@ namespace sim
      enum class
           STATE
      {
-          RUNNING, READY, BLOCKED, TERMINATED
+          RUNNING, READY, BLOCKED, TERMINATED, UNSTARTED
      };
 
      string const
@@ -110,13 +110,20 @@ namespace sim
      public:
           process
           (
-               uint id
+               uint process_id,
+               queue<task> && process_tasks
           ) :
-               mid(id),
-               mtime_start(0),
-               mtime_next(0),
-               mtime_end(0)
-          {}
+               mid(process_id),
+               mstate(STATE::UNSTARTED)
+          {
+               // steal memory from outside queue
+               mtasks.swap(process_tasks);
+
+               // initialize other members
+               mtime_start = mtasks.front().value;
+               mtime_next = mtasks.front().value;
+               mtime_end = mtasks.front().value;
+          }
 
           uint const & id = mid;
 
