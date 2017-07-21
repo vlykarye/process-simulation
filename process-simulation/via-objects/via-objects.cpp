@@ -3,7 +3,7 @@
 //   COSC 3360 - Operating Systems
 
 // Rewritten by
-//   Vlykarye
+//   Eric
 
 
 #include "stdafx.h"
@@ -28,7 +28,8 @@ namespace sim
           "NCORES", "NEW", "CORE", "DISK", "DISPLAY", "INPUT", "TERMINATE"
      };
 
-     TASK to_task(string str)
+     TASK
+          to_task(string str)
      {
           // ordered by frequency
           if ( str == "CORE" ) { return TASK::CORE; }
@@ -41,7 +42,8 @@ namespace sim
           throw exception("task does not exist");
      }
 
-     string to_string(TASK task)
+     string
+          to_string(TASK task)
      {
           return TASK_STRING[static_cast<int>(task)];
      }
@@ -60,7 +62,8 @@ namespace sim
           "RUNNING", "READY", "BLOCKED", "TERMINATED"
      };
 
-     STATE to_state(string str)
+     STATE
+          to_state(string str)
      {
           // ordered by frequency
           if ( str == "BLOCKED" ) { return STATE::BLOCKED; }
@@ -71,7 +74,8 @@ namespace sim
           throw exception("task does not exist");
      }
 
-     string to_string(STATE state)
+     string
+          to_string(STATE state)
      {
           return STATE_STRING[static_cast<int>(state)];
      }
@@ -127,7 +131,7 @@ namespace sim
           }
 
           // testing reference member idea
-          // allows reading but not writing, sans method call
+          // allows reading but not writing (sans method call)
 
           uint const & id = mid;
 
@@ -649,7 +653,7 @@ int main(int argc, char *argv[])
           // assign1 < input_file
      // Advantages
           // Very flexible
-          // Programmer writes her code as if in was read from standard input
+          // Programmer writes her code as if it was read from standard input
                // Much easier than dealing with files
 
      return 0;
