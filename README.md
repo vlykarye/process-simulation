@@ -6,3 +6,6 @@ The code under "via-tables" is mostly mine and was scrapped before completing th
 The code under "via-objects" is a rewrite of the code found in Larry's repository.
 We worked on it together, but his code was mainly used for commits.
 The goal of this repository is to simply rewrite the code as I envisioned it.
+
+Assignment1.pdf
+This document belongs to Doctor Jehan-François Pâris @ http://www2.cs.uh.edu/~paris/.
