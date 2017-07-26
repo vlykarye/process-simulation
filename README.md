@@ -8,5 +8,5 @@ We worked on it together, but his code was mainly used for commits.<br>
 The goal of this repository is to simply rewrite the code as I envisioned it.<br>
 
 Assignment1.pdf:<br>
-This document belongs to Doctor Jehan-François Pâris @ http://www2.cs.uh.edu/~paris/.<br>
+The document belongs to Doctor Jehan-François Pâris @ http://www2.cs.uh.edu/~paris/.<br>
 The document is provided to students for use in the assignment.
